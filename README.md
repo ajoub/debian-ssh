@@ -64,8 +64,8 @@ mv ~/.vnc/xstartup ~/.vnc/xstartup.bak
 vim ~/.vnc/xstartup
 ```
 
-Press I (capital i) for insert mode. Paste the following (try Ctrl + Shift
-+ V):
+Press I (capital i) for insert mode. Paste the following (try Ctrl + Shift +
+V):
 
 ```
 #!/bin/bash
