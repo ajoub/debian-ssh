@@ -4,71 +4,90 @@ debian-ssh
 Simple Debian/Ubuntu Docker images with *passwordless* SSH access and a regular user
 with `sudo` rights
 
-Tags (and their corresponding official base images)
-----
+# Building
 
-### Debian
+```
+docker build --tag debian:1.0 .
+```
 
-- `latest` -> `debian:latest`
-- `jessie` -> `debian:jessie`
-- `wheezy` -> `debian:wheezy`
-- `squeeze` -> `debian:squeeze`
+# Using
 
-### Ubuntu
+To run for the first time:
 
-- `ubuntu` -> `ubuntu:latest`
-- `vivid` -> `ubuntu:vivid`
-- `utopic` -> `ubuntu:utopic`
-- `trusty` -> `ubuntu:trusty`
-- `precise` -> `ubuntu:precise`
-
-
-Using
------
-
-The images are built by [Docker hub](https://registry.hub.docker.com/u/krlmlr/debian-ssh/).
-Each Debian release corresponds to a tag.  To run an SSH daemon in a new Debian "wheezy"
-container:
-
-    docker run -d -p 2222:22 -e SSH_KEY="$(cat ~/.ssh/id_rsa.pub)" krlmlr/debian-ssh:wheezy
+```
+git clone git@github.com:ajoub/debian-ssh.git
+cd debian-ssh
+docker run -d -p 2222:22 p 5901:5901 -e SSH_KEY="$(cat ~/.ssh/id_rsa.pub)" debian:1.0
+```
 
 This requires a public key in `~/.ssh/id_rsa.pub`.
 
 Two users exist in the container: `root` (superuser) and `docker` (a regular user
 with passwordless `sudo`). SSH access using your key will be allowed for both
 `root` and `docker` users.
+
 To connect to this container as root:
 
-    ssh -p 2222 root@localhost
+```
+ssh -p 2222 root@localhost
+```
 
-To connect to this container as regular user:
+To allow the regular user to ssh, set their password by running as root:
 
-    ssh -p 2222 docker@localhost
+```
+passwd docker
+```
+
+Then the regular user may ssh into this container with:
+
+```
+ssh -p 2222 docker@localhost
+```
 
 Change `2222` to any local port number of your choice.
 
+## VNC
+### In container
+As regular user docker, run:
 
-Enhancing
----------
+```
+sudo apt install tightvncserver
+vncserver
+```
 
-Each Debian release corresponds to a Git branch, the branches differ only by
-the `FROM` element in the `Dockerfile`.
+Enter password with 6 <= length <= 8
 
-To create the image `krlmlr/debian-ssh` e.g. for Debian "jessie":
+```
+Would you like to enter a view-only password (y/n)? n
+vncserver -kill :1
+mv ~/.vnc/xstartup ~/.vnc/xstartup.bak
+vim ~/.vnc/xstartup
+```
 
-    git checkout jessie
-    make build
+Press I (capital i) for insert mode. Paste the following (try Ctrl + Shift
++ V):
 
-Use `make rebuild` to pull the base image and rebuild without caching.
+```
+#!/bin/bash
+xrdb $HOME/.Xresources
+startxfce4 &
+```
 
+Press Esc and then :wq to write changes (w) and quit (q).
 
-Testing
--------
+```
+sudo chmod +x ~/.vnc/xstartup
+vncserver
+```
 
-Execute `make test` to create a container and fetch all environment variables
-via SSH.  This requires an `.ssh/id_rsa.pub` file in your home, it will be
-passed to the container via the environment variable `SSH_KEY` and installed.
-The `Makefile` is configured to run the container with the limited `docker`
-account, this user is allowed to run `sudo` without requiring a password.
-The SSH daemon will be always run with root access.  The `debug-*` targets
-can help troubleshooting any issues you might encounter.
+### On host
+
+```
+sudo apt install xtightvncviewer
+xtightvncviewer
+```
+
+Click on white box that appears in the middle of the screen to give it focus.
+Enter `localhost:5901` and press Enter.
+Enter the password and press Enter.
+You should now see the desktop of the container.
