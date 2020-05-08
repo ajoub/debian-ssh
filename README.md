@@ -2,7 +2,7 @@ debian-ssh
 ==========
 
 Simple Debian/Ubuntu Docker images with *passwordless* SSH access and a regular user
-with `sudo` rights
+with `sudo` rights and VNC
 
 # Building
 
