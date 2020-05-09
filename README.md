@@ -1,8 +1,8 @@
 debian-ssh
 ==========
 
-Simple Debian/Ubuntu Docker images with SSH access and a regular user with
-`sudo` rights and VNC.
+Simple Debian/Ubuntu Docker image with VNC and with a non-root user with SSH
+access and `sudo` rights.
 
 # Using
 
@@ -39,6 +39,12 @@ To start the container:
 
 ```
 docker start debian
+```
+
+To destroy the container:
+
+```
+docker rm --force debian
 ```
 
 ## VNC
