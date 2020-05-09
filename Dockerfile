@@ -1,25 +1,18 @@
 FROM debian:latest
 
 # Install packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install openssh-server sudo xfce4 xfce4-goodies tightvncserver vim
+RUN apt update
+RUN DEBIAN_FRONTEND=noninteractive apt -y install openssh-server sudo xfce4 xfce4-goodies tightvncserver vim
 ADD set_root_pw.sh /set_root_pw.sh
 ADD run.sh /run.sh
 RUN chmod +x /*.sh
-RUN mkdir -p /var/run/sshd && sed -i "s/UsePrivilegeSeparation.*/UsePrivilegeSeparation no/g" /etc/ssh/sshd_config \
-  && sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
-  && touch /root/.Xauthority \
-  && true
+RUN mkdir -p /var/run/sshd
+COPY sshd_config /etc/ssh/sshd_config
 
 ## Set a default user. Available via runtime flag `--user docker`
-## Add user to 'staff' group, granting them write privileges to /usr/local/lib/R/site.library
-## User should also have & own a home directory, but also be able to sudo
-RUN useradd docker \
-        && passwd -d docker \
-        && mkdir /home/docker \
-        && chown docker:docker /home/docker \
-        && addgroup docker staff \
-        && addgroup docker sudo \
-        && true
+## User docker is created with password `docker` and added to sudo group
+RUN useradd docker --create-home --shell /bin/bash -p "$(openssl passwd -1 docker)"
+RUN usermod -aG sudo docker
 
 EXPOSE 22
 CMD ["/run.sh"]
