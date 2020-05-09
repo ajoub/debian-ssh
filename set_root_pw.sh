@@ -18,7 +18,6 @@ chown -R docker:docker /home/docker/.ssh
 echo "========================================================================"
 echo "You can now connect to this container via SSH using:"
 echo ""
-echo "    ssh -p <port> <user>@<host>"
+echo "    ssh -p <port> docker@<host>"
 echo ""
-echo "Choose root (full access) or docker (limited user account) as <user>."
 echo "========================================================================"
