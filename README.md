@@ -1,14 +1,8 @@
 debian-ssh
 ==========
 
-Simple Debian/Ubuntu Docker images with *passwordless* SSH access and a regular user
-with `sudo` rights and VNC
-
-# Building
-
-```
-docker build --tag debian:1.0 .
-```
+Simple Debian/Ubuntu Docker images with SSH access and a regular user with
+`sudo` rights and VNC.
 
 # Using
 
@@ -17,41 +11,41 @@ To run for the first time:
 ```
 git clone git@github.com:ajoub/debian-ssh.git
 cd debian-ssh
-docker run -d -p 2222:22 p 5901:5901 -e SSH_KEY="$(cat ~/.ssh/id_rsa.pub)" debian:1.0
+docker build --tag debian:1.0 .
+docker run -d -p 2222:22 -p 5901:5901 -e SSH_KEY="$(cat ~/.ssh/id_rsa.pub)" --name debian debian:1.0
 ```
+
+Change `2222` to any local port number of your choice.
 
 This requires a public key in `~/.ssh/id_rsa.pub`.
 
 Two users exist in the container: `root` (superuser) and `docker` (a regular user
-with passwordless `sudo`). SSH access using your key will be allowed for both
-`root` and `docker` users.
+with `sudo`). SSH access using your key will be allowed for the `docker` user
+only.
 
-To connect to this container as root:
-
-```
-ssh -p 2222 root@localhost
-```
-
-To allow the regular user to ssh, set their password by running as root:
-
-```
-passwd docker
-```
-
-Then the regular user may ssh into this container with:
+To ssh into the container:
 
 ```
 ssh -p 2222 docker@localhost
 ```
 
-Change `2222` to any local port number of your choice.
+To stop the container:
+
+```
+docker stop debian
+```
+
+To start the container:
+
+```
+docker start debian
+```
 
 ## VNC
 ### In container
 As regular user docker, run:
 
 ```
-sudo apt install tightvncserver
 vncserver
 ```
 
